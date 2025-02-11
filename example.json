@@ -1,0 +1,46 @@
+{
+  "_id": "c-135",
+  "_parentId": "b-15",
+  "_type": "component",
+  "_component": "wordgame",
+  "_classes": "",
+  "_layout": "full-width",
+  "title": "Fruit Word Search",
+  "displayTitle": "Fruit Word Finder",
+  "_isModal": true,
+  "startText": "Begin Word Search",
+  "body": "Find all the fruit words hidden in the letter grid! Can you spot them all?",
+  "_supportedLayout": "full-width",
+  "_word-game": {
+      "winMessage": "Fantastic! You've found all the fruits!",
+      "notifyBodyMessage": "Great job! You've successfully completed the fruit word search puzzle!",
+      "theme": {
+          "primary": "#ff6b6b",
+          "secondary": "#4ecdc4",
+          "text": "#2d3436"
+      },
+      "words": [
+          {
+              "text": "MANGO"
+          },
+          {
+              "text": "GRAPE"
+          },
+          {
+              "text": "LEMON"
+          },
+          {
+              "text": "PEACH"
+          },
+          {
+              "text": "PLUM"
+          },
+          {
+              "text": "CHERRY"
+          }
+      ]
+  },
+  "globals": {
+      "ariaRegion": "Word search puzzle. Find and select fruit names from the grid of letters."
+  }
+}

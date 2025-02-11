@@ -1,0 +1,151 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "id": "http://jsonschema.net",
+    "required": false,
+    "globals": {
+        "ariaRegion": {
+            "type": "string",
+            "required": true,
+            "default": "Word game. Select correct words from mesh of letters.",
+            "inputType": "Text",
+            "validators": [],
+            "translatable": true
+        }
+    },
+    "properties": {
+        "title": {
+            "type": "string",
+            "required": false,
+            "default": "Word Game",
+            "inputType": "Text",
+            "validators": [],
+            "translatable": true
+        },
+        "displayTitle": {
+            "type": "string",
+            "required": false,
+            "default": "Word Game",
+            "inputType": "Text",
+            "validators": [],
+            "translatable": true
+        },
+        "_isModal": {
+            "type": "boolean",
+            "default": true,
+            "title": "Enable Modal",
+            "inputType": "Checkbox",
+            "help": "Enable modal mode for the word game"
+        },
+        "startText": {
+            "type": "string",
+            "default": "Start Game",
+            "title": "Start Button Text",
+            "inputType": "Text",
+            "help": "Text for the start button when modal mode is enabled"
+        },
+        "body": {
+            "type": "string",
+            "default": "Match the pairs to complete the game!",
+            "title": "Informational text.",
+            "inputType": "Text",
+            "help": "Text for the component description"
+        },
+        "_supportedLayout": {
+            "type": "string",
+            "required": true,
+            "enum": ["full-width", "half-width", "both"],
+            "default": "full-width",
+            "editorOnly": true
+        },
+        "_word-game": {
+            "type": "object",
+            "required": false,
+            "title": "Word Game",
+            "properties": {
+                "winMessage": {
+                    "type": "string",
+                    "default": "Conratulations! You Have Won!!!",
+                    "title": "Win message",
+                    "inputType": "Text",
+                    "help": "Text to reflect when player wins."
+                },
+                "notifyBodyMessage": {
+                    "type": "string",
+                    "default": "Conratulations! You Have Won!!!",
+                    "title": "Notification Body Message",
+                    "inputType": "Text",
+                    "help": "Additional Text to reflect on Adapt Notification body when player wins."
+                },
+                "theme": {
+                    "type": "object",
+                    "required": false,
+                    "title": "Theme Settings",
+                    "properties": {
+                        "primary": {
+                        "type": "string",
+                        "required": false,
+                        "default": "#117f93",
+                        "title": "Primary Color Class",
+                        "inputType": "Text",
+                        "validators": ["required"]
+                        },
+                        "secondary": {
+                        "type": "string",
+                        "required": false,
+                        "default": "#117f93",
+                        "title": "Secondary Color Class",
+                        "inputType": "Text",
+                        "validators": ["required"]
+                        },
+                        "text": {
+                        "type": "string",
+                        "required": false,
+                        "default": "#000000",
+                        "title": "Text Color Class",
+                        "inputType": "Text",
+                        "validators": ["required"]
+                        }
+                    }
+                },
+                "words": {
+                    "type": "array",
+                    "required": false,
+                    "title": "Words",
+                    "items": {
+                        "type": "object",
+                        "required": false,
+                        "title": "Word",
+                        "properties": {
+                            "text": {
+                                "type": "string",
+                                "required": true,
+                                "title": "Word Text",
+                                "inputType": "Text",
+                                "validators": ["required"],
+                                "help": "Word to add into letter mesh."
+                            }
+                        }
+                    },
+                    "default": [
+                        {
+                            "text": "ORANGE"
+                        },
+                        {
+                            "text": "BANANA"
+                        },
+                        {
+                            "text": "APPLE"
+                        },
+                        {
+                            "text": "PEAR"
+                        },
+                        {
+                            "text": "KIWI"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "name": "adapt-wordGame",
+    "repository": "git@github.com:ambivalent-axiom/adapt-wordGame.git",
+    "version": "1.0.0",
+    "framework": ">=5.39.6",
+    "homepage": "https://github.com/ambivalent-axiom/adapt-wordGame",
+    "bugs": "https://github.com/ambivalent-axiom/adapt-wordGame",
+    "component": "wordgame",
+    "targetAttribute": "_wordgame",
+    "displayName": "Adapt Word Game",
+    "description": "A component that allows student to select words",
+    "main": "/js/adapt-wordGame.js",
+    "keywords": [
+        "adapt-plugin",
+        "adapt-component",
+        "game"
+    ],
+    "license": "MIT",
+    "author": "Ambax@Digify arturs@digify.lv",
+    "pluginDependencies": {
+        "adapt-contrib-core": ">=5.19.1"
+      }
+}
