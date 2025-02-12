@@ -1,3 +1,10 @@
+@grid-background-color: #f0f0f0;
+@words-heading-color: #333;
+@words-background-color: #e0e0e0;
+@words-found-background-color: #90EE90;
+@reset-button-background-color: #e0e0e0;
+
+
 .word-game {
   width: 100%;
   max-width: 800px;
@@ -28,6 +35,30 @@
           }
       }
   }
+
+  &__reset {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80px;
+    &-button {
+        padding: 15px 20px;
+        font-size: 1.2em;
+        cursor: pointer;
+        border: 1px;
+        transition: transform 0.2s ease;
+        background-color: @reset-button-background-color;
+        border-radius: 15px;  
+
+        &:hover {
+            transform: scale(1.05);
+        }
+        
+        &:active {
+            transform: scale(0.95);
+        }
+    }
+  }
   
   // Grid layout
   &__grid {
@@ -35,10 +66,23 @@
       flex-direction: column;
       gap: 2px;
       margin-bottom: 20px;
-      background-color: #f0f0f0;
+      background-color: @grid-background-color;
       padding: 10px;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  &__selected-word {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: flex-end;
+    min-height: 85px;
+    font-size: 1.5em;
+    @media (max-width: 480px) {
+        min-height: 60px;
+        font-size: 1em;
+    }
   }
   
   &__row {
@@ -49,21 +93,22 @@
   
   // Individual letter cells
   &__letter {
-      width: 40px;
-      height: 40px;
+      width: 60px;
+      height: 60px;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 1.2em;
+      font-size: 2em;
       font-weight: bold;
       border: none;
-      border-radius: 4px;
+      border-radius: 10px;
       cursor: pointer;
       transition: all 0.2s ease;
       
       &:hover {
           transform: scale(1.1);
           z-index: 1;
+          box-shadow: 0 0 20px rgba(51, 51, 51, 0.3);
       }
       
       &:active {
@@ -82,15 +127,15 @@
       }
       
       @media (max-width: 768px) {
-          width: 30px;
-          height: 30px;
-          font-size: 1em;
+          width: 50px;
+          height: 50px;
+          font-size: 2em;
       }
       
       @media (max-width: 480px) {
-          width: 25px;
-          height: 25px;
-          font-size: 0.9em;
+          width: 50px;
+          height: 50px;
+          font-size: 1.8em;
       }
   }
   
@@ -107,20 +152,29 @@
           width: 100%;
           margin-bottom: 10px;
           font-size: 1.1em;
-          color: #333;
+          color: @words-heading-color;
+      }
+  }
+
+  &__body {
+    &--text {
+        padding: 5px 10px;
+        justify-content: center;
+        align-items: center;
+        display: flex;
       }
   }
   
   &__word {
       padding: 5px 10px;
-      background-color: #e0e0e0;
+      background-color: @words-background-color;
       border-radius: 15px;
       font-size: 1em;
       transition: all 0.3s ease;
       
       // Found word state
       &--found {
-          background-color: #90EE90;
+          background-color: @words-found-background-color;
           text-decoration: line-through;
           opacity: 0.7;
       }
@@ -144,15 +198,6 @@
       }
       100% {
           transform: scale(1);
-      }
-  }
-}
-
-// RTL support
-.dir-rtl {
-  .word-game {
-      &__word {
-          direction: rtl;
       }
   }
 }

@@ -1,24 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { classes, compile, templates } from 'core/js/reactHelpers';
+import { classes } from 'core/js/reactHelpers';
 
 export default function WordGame(props) {
   const {
     _isModal,
     startText,
-    _word_game: {
+    wordsToFindText,
+    description,
+    resetButton,
+    _wordgame: {
       words,
-      theme,
-      winMessage
-    }
+      theme
+    },
+    _foundWords,
+    onWordFound
   } = props;
 
   const [gameStarted, setGameStarted] = useState(false);
   const [selectedLetters, setSelectedLetters] = useState([]);
-  const [foundWords, setFoundWords] = useState([]);
+  const [selectedWord, setSelectedWord] = useState('');
   const [grid, setGrid] = useState([]);
-
-  // Grid size based on longest word and total characters
-  const GRID_SIZE = 12;
+  const GRID_SIZE = 8;
 
   useEffect(() => {
     if (gameStarted) {
@@ -89,31 +91,21 @@ export default function WordGame(props) {
   const handleLetterClick = (x, y) => {
     const letter = grid[x][y];
     setSelectedLetters([...selectedLetters, { letter, x, y }]);
-
     // Check if selected letters form a word
     const selectedWord = selectedLetters.map(l => l.letter).join('') + letter;
-    const wordMatch = words.find(w => w.text === selectedWord);
+    setSelectedWord(selectedWord);
+    const wordMatch = words.find(w => w.text === selectedWord); // undefined or obj
 
-    if (wordMatch && !foundWords.includes(selectedWord)) {
-      setFoundWords([...foundWords, selectedWord]);
+    if (wordMatch) {
+      onWordFound(selectedWord);
       setSelectedLetters([]);
-
-      // Check win condition
-      if (foundWords.length + 1 === words.length) {
-        onWin();
-      }
+      setSelectedWord('');
     }
   };
 
-  const onWin = () => {
-    props.onGameWon?.();
-    // Show win message using Adapt's notify system if available
-    if (window?.Adapt?.notify) {
-      window.Adapt.notify.popup({
-        title: winMessage,
-        body: props._word_game.notifyBodyMessage
-      });
-    }
+  const handleReset = () => {
+    setSelectedLetters([]);
+    setSelectedWord('');
   };
 
   const startGame = () => {
@@ -126,7 +118,6 @@ export default function WordGame(props) {
         <button
           className="word-game__start-button"
           onClick={startGame}
-          style={{ backgroundColor: theme.primary, color: theme.text }}
         >
           {startText}
         </button>
@@ -136,7 +127,13 @@ export default function WordGame(props) {
 
   return (
     <div className="word-game">
+      <div className="word-game__body--text">
+        <p>{description}</p>
+      </div>
       <div className="word-game__grid" style={{ color: theme.text }}>
+        <div className="word-game__selected-word" style={{ color: theme.word }}>
+          <p>{selectedWord}</p>
+        </div>
         {grid.map((row, x) => (
           <div key={x} className="word-game__row">
             {row.map((letter, y) => (
@@ -150,7 +147,8 @@ export default function WordGame(props) {
                 style={{
                   backgroundColor: selectedLetters.some(l => l.x === x && l.y === y)
                     ? theme.secondary
-                    : theme.primary
+                    : theme.primary,
+                  color: theme.text
                 }}
               >
                 {letter}
@@ -158,19 +156,27 @@ export default function WordGame(props) {
             ))}
           </div>
         ))}
+        <div className="word-game__reset">
+          <button
+            className="word-game__reset-button"
+            onClick={() => handleReset()}
+          >
+            {resetButton}
+          </button>
+        </div>
       </div>
 
       <div className="word-game__words">
-        <h3>Words to Find:</h3>
-        {words.map(({ text }) => (
+        <h3>{wordsToFindText}</h3>
+        {words.map(({ text, hint }) => (
           <span
             key={text}
             className={classes([
               'word-game__word',
-              foundWords.includes(text) ? 'word-game__word--found' : ''
+              _foundWords?.has(text) ? 'word-game__word--found' : ''
             ])}
           >
-            {text}
+            {hint}
           </span>
         ))}
       </div>
