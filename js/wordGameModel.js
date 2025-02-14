@@ -9,14 +9,10 @@ class WordGameModel extends ComponentModel {
   }
 
   setupWords() {
-    const words = this.get('_wordgame').words;
     this._foundWords = new Set(); // Initialize word tracking
-    this._totalWords = words.length;
-  }
-
-  setupAssessment() {
-    if (!this.get('_assessment') || !this.get('_assessment')._isEnabled) return;
-    this.setupQuestionModel();
+    this.set('_foundWords', this._foundWords);
+    this.set('_score', 0);
+    this._totalWords = this.get('maxWordsPerGame');
   }
 
   reset() {
@@ -28,18 +24,19 @@ class WordGameModel extends ComponentModel {
     this.trigger('reset'); // Trigger reset event for view
   }
 
-  setScore() { // Calculate score based on number of words found
-    const currentProgress = this._foundWords.size / this._totalWords;
-    const score = Math.round(currentProgress * this.get('_maxScore'));
+  setScore() { // Calculate score based on number of words correctly found
+    const score = this.get('_score') + 1;
     this.set('_score', score);
   }
 
-  onWordFound(word) {
+  onWordFound(word, wordCorrect) {
     if (this._foundWords.has(word)) return;
 
     this._foundWords.add(word);
     this.set('_foundWords', this._foundWords);
-    this.setScore();
+    if (wordCorrect) { // add score only if player found the currentWord
+      this.setScore();
+    }
     // Check if all words are found
     if (this._foundWords.size === this._totalWords) {
       this.onGameComplete();

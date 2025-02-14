@@ -2,8 +2,12 @@
 @words-heading-color: #333;
 @words-background-color: #e0e0e0;
 @words-found-background-color: #90EE90;
-@reset-button-background-color: #e0e0e0;
-
+@words-missed-background-color: #ff9b9d;
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
 
 .word-game {
   width: 100%;
@@ -35,30 +39,6 @@
           }
       }
   }
-
-  &__reset {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 80px;
-    &-button {
-        padding: 15px 20px;
-        font-size: 1.2em;
-        cursor: pointer;
-        border: 1px;
-        transition: transform 0.2s ease;
-        background-color: @reset-button-background-color;
-        border-radius: 15px;  
-
-        &:hover {
-            transform: scale(1.05);
-        }
-        
-        &:active {
-            transform: scale(0.95);
-        }
-    }
-  }
   
   // Grid layout
   &__grid {
@@ -70,19 +50,6 @@
       padding: 10px;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-
-  &__selected-word {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-content: flex-end;
-    min-height: 85px;
-    font-size: 1.5em;
-    @media (max-width: 480px) {
-        min-height: 60px;
-        font-size: 1em;
-    }
   }
   
   &__row {
@@ -118,6 +85,12 @@
       // Selected state
       &--selected {
           outline: 2px solid #fff;
+      }
+
+      &--wrong {
+        animation: shake 0.5s ease-in-out;
+        background-color: #ff0000 !important;
+        color: white !important;
       }
       
       // Accessibility
@@ -171,12 +144,25 @@
       border-radius: 15px;
       font-size: 1em;
       transition: all 0.3s ease;
+      visibility: hidden;
       
       // Found word state
       &--found {
           background-color: @words-found-background-color;
           text-decoration: line-through;
           opacity: 0.7;
+          visibility: visible;
+      }
+
+      &--missed {
+        background-color: @words-missed-background-color;
+        text-decoration: line-through;
+        opacity: 0.7;
+        visibility: visible;
+      }
+
+      &--current {
+        visibility: visible;
       }
   }
   

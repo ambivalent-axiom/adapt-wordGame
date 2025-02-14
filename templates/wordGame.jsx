@@ -7,7 +7,8 @@ export default function WordGame(props) {
     startText,
     wordsToFindText,
     description,
-    resetButton,
+    maxWordsPerGame,
+    gridSize,
     _wordgame: {
       words,
       theme
@@ -17,24 +18,63 @@ export default function WordGame(props) {
   } = props;
 
   const [gameStarted, setGameStarted] = useState(false);
-  const [selectedLetters, setSelectedLetters] = useState([]);
-  const [selectedWord, setSelectedWord] = useState('');
+  const [selectedLetters, setSelectedLetters] = useState([]); // letters user has clicked
+  const [selectedWords, setSelectedWords] = useState([]); // Words selected for the current game
+  const [currentWord, setCurrentWord] = useState(null); // sinle Object
+  const [allWordPositions, setAllWordPositions] = useState({}); // get currentWord letters to see if match
+  const [missedWords, setMissedWords] = useState(new Set()); // to track missed attmepts
+  const [wrongLetters, setWrongLetters] = useState(new Set()); // for React animations
   const [grid, setGrid] = useState([]);
-  const GRID_SIZE = 8;
+  const GRID_SIZE = gridSize;
 
   useEffect(() => {
-    if (gameStarted) {
-      generateGrid();
+    if (!gameStarted) {
+      selectWords(); // First we must select words even before game has started
     }
   }, [gameStarted]);
 
-  const generateGrid = () => {
-    // Create empty grid
-    const newGrid = Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(''));
+  useEffect(() => {
+    if (gameStarted) {
+      generateGrid(); // Now lets generate grid
+    }
+  }, [gameStarted]);
 
-    // Place words in grid
-    words.forEach(({ text }) => {
-      placeWord(text, newGrid);
+  useEffect(() => {
+    if (selectedWords.length > 0) {
+      selectCurrentWord(); // Last - take the current word for game.
+    }
+  }, [selectedWords, _foundWords, gameStarted]);
+
+  const selectCurrentWord = () => {
+    let remainingWords = selectedWords;
+    if (_foundWords && _foundWords.size > 0) {
+      remainingWords = selectedWords.filter(selectedWord => !_foundWords.has(selectedWord.text));
+    }
+
+    if (remainingWords.length > 0) {
+      setCurrentWord(remainingWords[0]);
+    }
+  };
+
+  const selectWords = () => { // select random words for current game
+    const selectedWords = [...words]
+      .sort(() => Math.random() - 0.5) // Randomize words
+      .slice(0, Math.min(maxWordsPerGame, words.length)); // Select random subset based on maxWordsPerGame
+
+    setSelectedWords(selectedWords); // set selected words globally available
+  };
+
+  const generateGrid = () => {
+    const newGrid = Array(GRID_SIZE).fill()
+      .map(() => Array(GRID_SIZE).fill(''));
+
+    // Object to store positions for all words
+    const wordPositions = {};
+
+    // Place all selected words and track their positions
+    selectedWords.forEach(({ text }) => {
+      const positions = placeWord(text, newGrid);
+      wordPositions[text] = positions;
     });
 
     // Fill remaining spaces with random letters
@@ -47,6 +87,7 @@ export default function WordGame(props) {
     }
 
     setGrid(newGrid);
+    setAllWordPositions(wordPositions);
   };
 
   const placeWord = (word, grid) => {
@@ -56,17 +97,27 @@ export default function WordGame(props) {
       [1, 1] // diagonal
     ];
 
+    let positions = new Set();
     let placed = false;
+
     while (!placed) {
       const direction = directions[Math.floor(Math.random() * directions.length)];
       const startX = Math.floor(Math.random() * (GRID_SIZE - word.length * direction[0]));
       const startY = Math.floor(Math.random() * (GRID_SIZE - word.length * direction[1]));
 
       if (canPlaceWord(word, startX, startY, direction, grid)) {
-        placeWordAt(word, startX, startY, direction, grid);
+        positions = new Set(); // Reset positions for successful placement
+        for (let i = 0; i < word.length; i++) {
+          const x = startX + i * direction[0];
+          const y = startY + i * direction[1];
+          grid[x][y] = word[i];
+          positions.add(`${x}-${y}`);
+        }
         placed = true;
       }
     }
+
+    return positions;
   };
 
   const canPlaceWord = (word, startX, startY, direction, grid) => {
@@ -80,32 +131,59 @@ export default function WordGame(props) {
     return true;
   };
 
-  const placeWordAt = (word, startX, startY, direction, grid) => {
-    for (let i = 0; i < word.length; i++) {
-      const x = startX + i * direction[0];
-      const y = startY + i * direction[1];
-      grid[x][y] = word[i];
-    }
-  };
-
   const handleLetterClick = (x, y) => {
-    const letter = grid[x][y];
-    setSelectedLetters([...selectedLetters, { letter, x, y }]);
-    // Check if selected letters form a word
-    const selectedWord = selectedLetters.map(l => l.letter).join('') + letter;
-    setSelectedWord(selectedWord);
-    const wordMatch = words.find(w => w.text === selectedWord); // undefined or obj
-
-    if (wordMatch) {
-      onWordFound(selectedWord);
-      setSelectedLetters([]);
-      setSelectedWord('');
+    // Check if letter is already selected - if so, remove it
+    const existingIndex = selectedLetters.findIndex(l => l.x === x && l.y === y);
+    if (existingIndex !== -1) {
+      const newSelectedLetters = selectedLetters.filter((_, index) => index !== existingIndex);
+      setSelectedLetters(newSelectedLetters);
+      return;
     }
-  };
 
-  const handleReset = () => {
-    setSelectedLetters([]);
-    setSelectedWord('');
+    const letter = grid[x][y];
+    const newSelectedLetters = [...selectedLetters, { letter, x, y }];
+    setSelectedLetters(newSelectedLetters);
+
+    // Get the required positions for the current word
+    const requiredPositions = currentWord ? allWordPositions[currentWord.text] : new Set();
+
+    // Check if selected positions match current word positions
+    const selectedPositions = new Set(newSelectedLetters.map(l => `${l.x}-${l.y}`));
+    const hasCorrectLength = newSelectedLetters.length === currentWord?.text.length;
+
+    // Check if all selected positions match the required positions
+    const wordMatch = hasCorrectLength && requiredPositions &&
+      Array.from(requiredPositions).every(pos => selectedPositions.has(pos));
+
+    const anyWordMatch = Object.values(allWordPositions).some(wordPositions =>
+      selectedPositions.size === wordPositions.size &&
+        Array.from(wordPositions).every(pos => selectedPositions.has(pos))
+    );
+
+    if (wordMatch) { // in case if precise match
+      onWordFound(currentWord?.text, true);
+
+      setSelectedLetters([]);
+      selectCurrentWord();
+      return;
+    }
+
+    if (anyWordMatch) { // in case if he has a match but wrong word selected
+      onWordFound(currentWord?.text, false);
+
+      setMissedWords(prev => {
+        const newSet = new Set(prev);
+        newSet.add(currentWord.text);
+        return newSet;
+      });
+      setWrongLetters(new Set(newSelectedLetters.map(l => `${l.x}-${l.y}`)));
+      setTimeout(() => {
+        setWrongLetters(new Set());
+      }, 1000);
+
+      setSelectedLetters([]);
+      selectCurrentWord();
+    }
   };
 
   const startGame = () => {
@@ -131,9 +209,6 @@ export default function WordGame(props) {
         <p>{description}</p>
       </div>
       <div className="word-game__grid" style={{ color: theme.text }}>
-        <div className="word-game__selected-word" style={{ color: theme.word }}>
-          <p>{selectedWord}</p>
-        </div>
         {grid.map((row, x) => (
           <div key={x} className="word-game__row">
             {row.map((letter, y) => (
@@ -141,14 +216,17 @@ export default function WordGame(props) {
                 key={`${x}-${y}`}
                 className={classes([
                   'word-game__letter',
-                  selectedLetters.some(l => l.x === x && l.y === y) ? 'word-game__letter--selected' : ''
+                  selectedLetters.some(l => l.x === x && l.y === y) ? 'word-game__letter--selected' : '',
+                  wrongLetters.has(`${x}-${y}`) ? 'word-game__letter--wrong' : ''
                 ])}
                 onClick={() => handleLetterClick(x, y)}
                 style={{
                   backgroundColor: selectedLetters.some(l => l.x === x && l.y === y)
                     ? theme.secondary
-                    : theme.primary,
-                  color: theme.text
+                    : wrongLetters.has(`${x}-${y}`)
+                      ? '#ff0000' // Red for wrong letters
+                      : theme.primary,
+                  color: wrongLetters.has(`${x}-${y}`) ? 'white' : theme.text
                 }}
               >
                 {letter}
@@ -156,24 +234,18 @@ export default function WordGame(props) {
             ))}
           </div>
         ))}
-        <div className="word-game__reset">
-          <button
-            className="word-game__reset-button"
-            onClick={() => handleReset()}
-          >
-            {resetButton}
-          </button>
-        </div>
       </div>
 
       <div className="word-game__words">
         <h3>{wordsToFindText}</h3>
-        {words.map(({ text, hint }) => (
+        {selectedWords.map(({ text, hint }) => (
           <span
             key={text}
             className={classes([
               'word-game__word',
-              _foundWords?.has(text) ? 'word-game__word--found' : ''
+              _foundWords?.has(text) ? 'word-game__word--found' : '',
+              currentWord.text === text ? 'word-game__word--current' : '',
+              missedWords?.has(text) ? 'word-game__word--missed' : ''
             ])}
           >
             {hint}
