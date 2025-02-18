@@ -1,46 +1,79 @@
 {
-  "_id": "c-135",
-  "_parentId": "b-15",
-  "_type": "component",
-  "_component": "wordgame",
-  "_classes": "",
-  "_layout": "full-width",
-  "title": "Fruit Word Search",
-  "displayTitle": "Fruit Word Finder",
-  "_isModal": true,
-  "startText": "Begin Word Search",
-  "body": "Find all the fruit words hidden in the letter grid! Can you spot them all?",
-  "_supportedLayout": "full-width",
-  "_word-game": {
-      "winMessage": "Fantastic! You've found all the fruits!",
-      "notifyBodyMessage": "Great job! You've successfully completed the fruit word search puzzle!",
-      "theme": {
-          "primary": "#ff6b6b",
-          "secondary": "#4ecdc4",
-          "text": "#2d3436"
-      },
-      "words": [
-          {
-              "text": "MANGO"
-          },
-          {
-              "text": "GRAPE"
-          },
-          {
-              "text": "LEMON"
-          },
-          {
-              "text": "PEACH"
-          },
-          {
-              "text": "PLUM"
-          },
-          {
-              "text": "CHERRY"
-          }
-      ]
-  },
-  "globals": {
-      "ariaRegion": "Word search puzzle. Find and select fruit names from the grid of letters."
-  }
+    "_id": "c-700",
+    "_parentId": "b-700",
+    "_type": "component",
+    "_component": "wordgame",
+    "_classes": "",
+    "_layout": "full-width",
+    "title": "Fruit Word Search",
+    "displayTitle": "Fruit Word Finder",
+    "titleDescription": "Game to find fruits",
+    "startText": "Begin Word Search",
+    "wordsToFindText": "Vārds, kurš jāatrod:",
+    "description": "Find all the fruit words hidden in the letter grid! Can you spot them all?",
+    "_supportedLayout": "full-width",
+    "_canShowFeedback": true,
+    "maxWordsPerGame": 2,
+    "onClickSound": "course/en/sounds/click.mp3",
+    "onCorrectSound": "course/en/sounds/correct.mp3",
+    "onWrongSound": "course/en/sounds/wrong.mp3",
+    "onFinishSound": "course/en/sounds/finished.mp3",
+    "gridSize": 8,
+    "_feedback": {
+        "_isEnabled": false,
+        "complete": {
+        "title": "Fantastic! You've found all the fruits!",
+        "body": "Great job! You've successfully completed the fruit word search puzzle!"
+        }
+    },
+    "_customModal": {
+        "_isEnabled": true,
+        "complete": {
+        "title": "Fantastic! You've found all the fruits!",
+        "body": "Great job! You've successfully completed the fruit word search puzzle!"
+        },
+        "score": "Your score:",
+        "buttonText": "OK"
+    },
+    "_assessment": {
+        "_isEnabled": true,
+        "_shouldSubmitScore": true
+    },
+    "_wordgame": {
+        "theme": {
+            "primary": "#73c855",
+            "secondary": "#b7eaad",
+            "text": "#182a12",
+            "word": "#333"
+        },
+        "words": [
+            {
+                "text": "MANGO",
+                "hint": "A fruit that tastes like pine."
+            },
+            {
+                "text": "APPLE",
+                "hint": "Most regular fruit on earth."
+            },
+            {
+                "text": "PEAR",
+                "hint": "Almost apple, looks like a bulb."
+            },
+            {
+                "text": "KIWI",
+                "hint": "Tastes like a strawberry, but green."
+            }
+        ],
+        "decoys": [
+            {
+            "text": "CAR"
+            },
+            {
+            "text": "BULB"
+            }
+        ]
+    },
+    "globals": {
+        "ariaRegion": "Word search puzzle. Find and select fruit names from the grid of letters."
+    }
 }
