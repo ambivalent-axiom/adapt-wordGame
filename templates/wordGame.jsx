@@ -1,39 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import { classes } from 'core/js/reactHelpers';
+import { start } from 'extensions/adapt-contrib-spoor/js/scorm/cookieLMS';
 
 export default function WordGame(props) {
   const {
-    _isModal,
+    displayTitle,
+    titleDescription,
     startText,
     wordsToFindText,
     description,
     maxWordsPerGame,
     gridSize,
+    onClickSound,
+    onCorrectSound,
+    onWrongSound,
+    onFinishSound,
+    _isComplete,
+    _customModal,
+    _score,
     _wordgame: {
       words,
+      decoys,
       theme
     },
     _foundWords,
-    onWordFound
+    onWordFound,
+    reset
   } = props;
 
   const [gameStarted, setGameStarted] = useState(false);
   const [selectedLetters, setSelectedLetters] = useState([]); // letters user has clicked
   const [selectedWords, setSelectedWords] = useState([]); // Words selected for the current game
+  const [guessedLetters, setGuessedLetters] = useState([]); // To track guessed letters and apply CSS
   const [currentWord, setCurrentWord] = useState(null); // sinle Object
   const [allWordPositions, setAllWordPositions] = useState({}); // get currentWord letters to see if match
   const [missedWords, setMissedWords] = useState(new Set()); // to track missed attmepts
   const [wrongLetters, setWrongLetters] = useState(new Set()); // for React animations
   const [grid, setGrid] = useState([]);
   const GRID_SIZE = gridSize;
+  const clickSound = new Audio(onClickSound);
+  const successSound = new Audio(onCorrectSound);
+  const errorSound = new Audio(onWrongSound);
+  const finishSound = new Audio(onFinishSound);
 
   useEffect(() => {
     if (!gameStarted) {
       selectWords(); // First we must select words even before game has started
     }
-  }, [gameStarted]);
-
-  useEffect(() => {
     if (gameStarted) {
       generateGrid(); // Now lets generate grid
     }
@@ -43,7 +56,20 @@ export default function WordGame(props) {
     if (selectedWords.length > 0) {
       selectCurrentWord(); // Last - take the current word for game.
     }
-  }, [selectedWords, _foundWords, gameStarted]);
+
+    if (_isComplete) { // play finishing sound if game is completed
+      playSound(finishSound);
+    }
+  }, [selectedWords, _foundWords, gameStarted, _isComplete]);
+
+  const playSound = (audio) => {
+    audio.currentTime = 0;
+    try {
+      audio.play().catch(error => console.log('Error playing sound:', error));
+    } catch (error) {
+      console.log('Error playing sound:', error);
+    }
+  };
 
   const selectCurrentWord = () => {
     let remainingWords = selectedWords;
@@ -76,6 +102,14 @@ export default function WordGame(props) {
       const positions = placeWord(text, newGrid);
       wordPositions[text] = positions;
     });
+
+    // Place decoys and track their positions if decoys are provided
+    if (decoys) {
+      decoys.forEach(({ text }) => {
+        const positions = placeWord(text, newGrid);
+        wordPositions[text] = positions;
+      });
+    }
 
     // Fill remaining spaces with random letters
     for (let i = 0; i < GRID_SIZE; i++) {
@@ -132,6 +166,7 @@ export default function WordGame(props) {
   };
 
   const handleLetterClick = (x, y) => {
+    playSound(clickSound);
     // Check if letter is already selected - if so, remove it
     const existingIndex = selectedLetters.findIndex(l => l.x === x && l.y === y);
     if (existingIndex !== -1) {
@@ -161,16 +196,19 @@ export default function WordGame(props) {
     );
 
     if (wordMatch) { // in case if precise match
+      setGuessedLetters( // collect these to mark guessed in CSS
+        guessedLetters => guessedLetters.concat(newSelectedLetters)
+      );
       onWordFound(currentWord?.text, true);
-
       setSelectedLetters([]);
       selectCurrentWord();
+      playSound(successSound);
       return;
     }
 
     if (anyWordMatch) { // in case if he has a match but wrong word selected
       onWordFound(currentWord?.text, false);
-
+      playSound(errorSound);
       setMissedWords(prev => {
         const newSet = new Set(prev);
         newSet.add(currentWord.text);
@@ -190,9 +228,22 @@ export default function WordGame(props) {
     setGameStarted(true);
   };
 
-  if (!gameStarted && _isModal) {
+  const restartGame = () => {
+    setGuessedLetters([]);
+    setSelectedLetters([]);
+    setMissedWords(new Set());
+    setTimeout(setGameStarted(false), 500);
+    reset(); // perform reset at Adapt model level
+    setTimeout(setGameStarted(true), 500);
+    setTimeout(selectWords(), 500);
+    setTimeout(generateGrid(), 500);
+  };
+
+  if (!gameStarted) {
     return (
       <div className="word-game__start">
+        <span className='word-game__start-title'>{displayTitle}</span>
+        <p className="word-game__start-description">{titleDescription}</p>
         <button
           className="word-game__start-button"
           onClick={startGame}
@@ -202,9 +253,47 @@ export default function WordGame(props) {
       </div>
     );
   }
-
   return (
     <div className="word-game">
+      <div
+        className='word-game__customModal'
+        style={{
+          visibility: _isComplete && _customModal._isEnabled ? 'visible' : 'hidden'
+        }}
+      >
+        <div className='word-game__customModal-content'>
+          <h2 className='word-game__customModal-title'>
+            {_score === maxWordsPerGame
+              ? _customModal.complete?.title
+              : _score > 0
+                ? _customModal.incomplete?.title
+                : _customModal.failed?.title
+            }
+          </h2>
+          <p className='word-game__customModal-body'>
+            {_score === maxWordsPerGame
+              ? _customModal.complete?.body
+              : _score > 0
+                ? _customModal.incomplete?.body
+                : _customModal.failed?.body
+            }
+          </p>
+          <div className='word-game__customModal-score'>
+            {_customModal?.score} {_score}
+          </div>
+          <button
+            className='word-game__customModal-button'
+            onClick={() => {
+              const modalElement = document.querySelector('.word-game__customModal');
+              if (modalElement) {
+                modalElement.style.visibility = 'hidden';
+              }
+            }}
+          >
+            {_customModal?.buttonText}
+          </button>
+        </div>
+      </div>
       <div className="word-game__body--text">
         <p>{description}</p>
       </div>
@@ -220,8 +309,8 @@ export default function WordGame(props) {
                   wrongLetters.has(`${x}-${y}`) ? 'word-game__letter--wrong' : ''
                 ])}
                 onClick={() => handleLetterClick(x, y)}
-                style={{
-                  backgroundColor: selectedLetters.some(l => l.x === x && l.y === y)
+                style={{ // change to light background if selected or if word is guessed
+                  backgroundColor: selectedLetters.some(l => l.x === x && l.y === y) || guessedLetters.some(l => l.x === x && l.y === y)
                     ? theme.secondary
                     : wrongLetters.has(`${x}-${y}`)
                       ? '#ff0000' // Red for wrong letters
@@ -234,23 +323,38 @@ export default function WordGame(props) {
             ))}
           </div>
         ))}
+        <div
+          className='word-game__reset'>
+          <button
+            className='word-game__reset-button'
+            onClick={() => restartGame()}
+            style={{
+              backgroundColor: theme.secondary,
+              visibility: _isComplete ? 'visible' : 'hidden'
+            }}
+          >
+            Reset
+          </button>
+        </div>
       </div>
 
       <div className="word-game__words">
         <h3>{wordsToFindText}</h3>
-        {selectedWords.map(({ text, hint }) => (
-          <span
-            key={text}
-            className={classes([
-              'word-game__word',
-              _foundWords?.has(text) ? 'word-game__word--found' : '',
-              currentWord.text === text ? 'word-game__word--current' : '',
-              missedWords?.has(text) ? 'word-game__word--missed' : ''
-            ])}
-          >
-            {hint}
-          </span>
-        ))}
+        <div className="word-game__words-list">
+          {selectedWords.map(({ text, hint }) => (
+            <span
+              key={text}
+              className={classes([
+                'word-game__word',
+                _foundWords?.has(text) ? 'word-game__word--found' : '',
+                currentWord.text === text ? 'word-game__word--current' : '',
+                missedWords?.has(text) ? 'word-game__word--missed' : ''
+              ])}
+            >
+              {hint}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );

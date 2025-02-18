@@ -45,7 +45,7 @@ class WordGameModel extends ComponentModel {
 
   onGameComplete() {
     this.set({
-      _score: this._score,
+      _score: this.get('_score'),
       _isComplete: true,
       _isInteractionComplete: true
     });
@@ -58,7 +58,6 @@ class WordGameModel extends ComponentModel {
         body: feedback.complete.body
       });
     }
-
     this.trigger('complete'); // Trigger completion event
   }
 

@@ -7,20 +7,91 @@
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
     75% { transform: translateX(5px); }
-  }
+}
+
+@keyframes fadeOutAndCollapse {
+    0% {
+        max-height: 50px;
+        opacity: 1;
+        margin: 2px 0;
+    }
+    100% {
+        max-height: 0;
+        opacity: 0;
+        margin: 0;
+        padding: 0;
+    }
+}
+
+@keyframes modalAppear {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
 .word-game {
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
+
+  // customModal component
+  &__customModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    visibility: hidden;
+    
+    &-content {
+        background-color: white;
+        padding: 30px;
+        border-radius: 10px;
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        animation: modalAppear 0.3s ease-out;
+    }
+    
+    &-title {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+        color: #333;
+    }
+    
+    &-body {
+        margin-bottom: 20px;
+        color: #666;
+    }
+    
+    &-score {
+        font-size: 1.2em;
+        margin-bottom: 25px;
+        color: #2c3e50;
+        font-weight: bold;
+    }
+  }
   
   // Container for modal start screen
-  &__start {
+  &__start, &__reset, &__customModal {
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      min-height: 200px;
+      gap: 10px;
+      padding: 10px;
       
       &-button {
           padding: 15px 30px;
@@ -38,7 +109,16 @@
               transform: scale(0.95);
           }
       }
+
+      &-title {
+        font-size: 2em;
+      }
+
+      &-description {
+        font-size: 1em;
+      }
   }
+
   
   // Grid layout
   &__grid {
@@ -120,12 +200,20 @@
       padding: 15px;
       background-color: #f8f8f8;
       border-radius: 8px;
+      max-height: 140px;
       
       h3 {
           width: 100%;
           margin-bottom: 10px;
           font-size: 1.1em;
           color: @words-heading-color;
+      }
+
+      &-list {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        transition: all 0.3s ease-in-out;
       }
   }
 
@@ -139,31 +227,37 @@
   }
   
   &__word {
-      padding: 5px 10px;
-      background-color: @words-background-color;
-      border-radius: 15px;
-      font-size: 1em;
-      transition: all 0.3s ease;
-      visibility: hidden;
-      
-      // Found word state
-      &--found {
-          background-color: @words-found-background-color;
-          text-decoration: line-through;
-          opacity: 0.7;
-          visibility: visible;
-      }
+    padding: 5px 10px;
+    background-color: @words-background-color;
+    border-radius: 15px;
+    font-size: 1em;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    margin: 2px 0;
+    
+    // Found word state
+    &--found {
+        max-height: 50px; // Temporary show
+        opacity: 1;
+        background-color: @words-found-background-color;
+        
+        // After showing found state, disappear
+        animation: fadeOutAndCollapse 0.5s ease-in-out forwards;
+        animation-delay: 0.3s; // Show found state briefly before disappearing
+    }
 
-      &--missed {
+    &--missed {
+        max-height: 50px;
+        opacity: 1;
         background-color: @words-missed-background-color;
-        text-decoration: line-through;
-        opacity: 0.7;
-        visibility: visible;
-      }
+    }
 
-      &--current {
-        visibility: visible;
-      }
+    &--current {
+        max-height: 50px;
+        opacity: 1;
+    }
   }
   
   // Completion animation

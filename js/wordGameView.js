@@ -7,7 +7,8 @@ class WordGameView extends ComponentView {
     super.initialize(...args);
     this.model.set({
       onGameWon: () => this.model.onGameComplete(),
-      onWordFound: (word, wordCorrect) => this.model.onWordFound(word, wordCorrect)
+      onWordFound: (word, wordCorrect) => this.model.onWordFound(word, wordCorrect),
+      reset: () => this.model.reset()
     });
   }
 
