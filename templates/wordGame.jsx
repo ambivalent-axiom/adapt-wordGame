@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { classes } from 'core/js/reactHelpers';
-import { start } from 'extensions/adapt-contrib-spoor/js/scorm/cookieLMS';
 
 export default function WordGame(props) {
   const {
