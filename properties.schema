@@ -14,55 +14,14 @@
         }
     },
     "properties": {
-        "_id": {
-            "type": "string",
-            "required": true,
-            "default": "",
-            "inputType": "Text",
-            "validators": ["required"]
-        },
-        "_parentId": {
-            "type": "string",
-            "required": true,
-            "default": "",
-            "inputType": "Text",
-            "validators": ["required"]
-        },
-        "_type": {
-            "type": "string",
-            "required": true,
-            "default": "component",
-            "inputType": "Text",
-            "validators": ["required"]
-        },
-        "_component": {
-            "type": "string",
-            "required": true,
-            "default": "wordgame",
-            "inputType": "Text",
-            "validators": ["required"]
-        },
-        "_classes": {
-            "type": "string",
-            "required": false,
-            "default": "",
-            "inputType": "Text",
-            "validators": []
-        },
-        "_layout": {
-            "type": "string",
-            "required": true,
-            "default": "full-width",
-            "inputType": "Text",
-            "validators": ["required"]
-        },
         "title": {
             "type": "string",
             "required": false,
             "default": "Word Game",
             "inputType": "Text",
             "validators": [],
-            "translatable": true
+            "translatable": true,
+            "help": "This is before game starts view."
         },
         "displayTitle": {
             "type": "string",
@@ -70,29 +29,32 @@
             "default": "Word Game",
             "inputType": "Text",
             "validators": [],
-            "translatable": true
+            "translatable": true,
+            "help": "This is before game starts view."
         },
         "titleDescription": {
             "type": "string",
             "required": false,
             "inputType": "Text",
             "validators": [],
-            "translatable": true
+            "translatable": true,
+            "help": "This is before game starts view."
         },
         "startText": {
             "type": "string",
             "default": "Start Game",
             "title": "Start Button Text",
             "inputType": "Text",
-            "help": "Text for the start button when modal mode is enabled"
+            "help": "This is before game starts view."
         },
         "wordsToFindText": {
             "type": "string",
             "required": false,
-            "default": "Words to find:",
+            "default": "Hint:",
             "inputType": "Text",
             "validators": [],
-            "translatable": true
+            "translatable": true,
+            "help": "Title text fro hint block."
         },
         "description": {
             "type": "string",
@@ -112,23 +74,169 @@
         "_canShowFeedback": {
             "type": "boolean",
             "required": false,
+            "title": "Can Show Feedback?",
             "default": true,
             "inputType": "Checkbox",
             "validators": []
+        },
+        "_assessment": {
+            "type": "object",
+            "title": "SCORM Assessment",
+            "required": false,
+            "properties": {
+                "_isEnabled": {
+                    "type": "boolean",
+                    "title": "Enabled",
+                    "required": true,
+                    "default": true
+                },
+                "_shouldSubmitScore": {
+                    "type": "boolean",
+                    "title": "Submit score",
+                    "required": true,
+                    "default": true
+                }
+            }
+        },
+        "_feedback": {
+            "type": "object",
+            "required": false,
+            "properties": {
+                "_isEnabled": {
+                    "type": "boolean",
+                    "required": true,
+                    "title": "Adapt feedback?",
+                    "default": false
+                },
+                "complete": {
+                    "type": "object",
+                    "required": false,
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "required": false,
+                            "default": "Congratulations!",
+                            "inputType": "Text",
+                            "validators": []
+                        },
+                        "body": {
+                            "type": "string",
+                            "required": false,
+                            "default": "You have completed the word game!",
+                            "inputType": "TextArea",
+                            "validators": []
+                        }
+                    }
+                }
+            }
+        },
+        "customModal": {
+            "type": "object",
+            "required": false,
+            "properties": {
+                "_isEnabled": {
+                    "type": "boolean",
+                    "required": true,
+                    "title": "Custom Feedback Modal",
+                    "help": "This if You want to edit CSS specifically for the modal of this component.",
+                    "default": true
+                },
+                "complete": {
+                    "type": "object",
+                    "title": "Full score",
+                    "required": false,
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "required": false,
+                            "default": "Congratulations!",
+                            "inputType": "Text",
+                            "validators": []
+                        },
+                        "body": {
+                            "type": "string",
+                            "required": false,
+                            "default": "You have completed the word game!",
+                            "inputType": "TextArea",
+                            "validators": []
+                        }
+                    }
+                },
+                "incomplete": {
+                    "type": "object",
+                    "title": "Partial score",
+                    "help": "Had score above zero but below maximum.",
+                    "required": false,
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "required": false,
+                            "default": "Good!",
+                            "inputType": "Text",
+                            "validators": []
+                        },
+                        "body": {
+                            "type": "string",
+                            "required": false,
+                            "default": "You have partially completed the word game!",
+                            "inputType": "TextArea",
+                            "validators": []
+                        }
+                    }
+                },
+                "failed": {
+                    "type": "object",
+                    "title": "Failed",
+                    "required": false,
+                    "help": "Had 0 score, did not find any word.",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "required": false,
+                            "default": "Bad!",
+                            "inputType": "Text",
+                            "validators": []
+                        },
+                        "body": {
+                            "type": "string",
+                            "required": false,
+                            "default": "You have failed the word game!",
+                            "inputType": "TextArea",
+                            "validators": []
+                        }
+                    }
+                },
+                "score": {
+                    "type": "string",
+                    "required": false,
+                    "default": "Your score:",
+                    "inputType": "Text",
+                    "validators": []
+                },
+                "buttonText": {
+                    "type": "string",
+                    "required": false,
+                    "default": "OK",
+                    "inputType": "Text",
+                    "validators": []
+                }
+            }
         },
         "maxWordsPerGame": {
             "type": "number",
             "required": false,
             "default": 2,
             "inputType": "Number",
-            "validators": ["number"]
+            "validators": ["number"],
+            "help": "How many random words will be selected for each game"
         },
         "gridSize": {
             "type": "number",
             "required": false,
             "default": 8,
             "inputType": "Number",
-            "validators": ["number"]
+            "validators": ["number"],
+            "help": "preferably to accomodate word length, but long words can be an issue on mobile devices."
         },
         "onClickSound": {
             "type": "string",
@@ -158,99 +266,7 @@
             "inputType": "Asset:audio",
             "validators": []
         },
-        "_feedback": {
-            "type": "object",
-            "required": false,
-            "properties": {
-                "_isEnabled": {
-                    "type": "boolean",
-                    "required": true,
-                    "default": false
-                },
-                "complete": {
-                    "type": "object",
-                    "required": false,
-                    "properties": {
-                        "title": {
-                            "type": "string",
-                            "required": false,
-                            "default": "Congratulations!",
-                            "inputType": "Text",
-                            "validators": []
-                        },
-                        "body": {
-                            "type": "string",
-                            "required": false,
-                            "default": "You have completed the word game!",
-                            "inputType": "TextArea",
-                            "validators": []
-                        }
-                    }
-                }
-            }
-        },
-        "_customModal": {
-            "type": "object",
-            "required": false,
-            "properties": {
-                "_isEnabled": {
-                    "type": "boolean",
-                    "required": true,
-                    "default": true
-                },
-                "complete": {
-                    "type": "object",
-                    "required": false,
-                    "properties": {
-                        "title": {
-                            "type": "string",
-                            "required": false,
-                            "default": "Congratulations!",
-                            "inputType": "Text",
-                            "validators": []
-                        },
-                        "body": {
-                            "type": "string",
-                            "required": false,
-                            "default": "You have completed the word game!",
-                            "inputType": "TextArea",
-                            "validators": []
-                        }
-                    }
-                },
-                "score": {
-                    "type": "string",
-                    "required": false,
-                    "default": "Your score:",
-                    "inputType": "Text",
-                    "validators": []
-                },
-                "buttonText": {
-                    "type": "string",
-                    "required": false,
-                    "default": "OK",
-                    "inputType": "Text",
-                    "validators": []
-                }
-            }
-        },
-        "_assessment": {
-            "type": "object",
-            "required": false,
-            "properties": {
-                "_isEnabled": {
-                    "type": "boolean",
-                    "required": true,
-                    "default": true
-                },
-                "_shouldSubmitScore": {
-                    "type": "boolean",
-                    "required": true,
-                    "default": true
-                }
-            }
-        },
-        "_word-game": {
+        "_wordgame": {
             "type": "object",
             "required": false,
             "title": "Word Game",
@@ -276,7 +292,23 @@
                             "inputType": "Text",
                             "validators": ["required"]
                         },
+                        "wrong": {
+                            "type": "string",
+                            "required": false,
+                            "default": "#117f93",
+                            "title": "Secondary Color",
+                            "inputType": "Text",
+                            "validators": ["required"]
+                        },
                         "text": {
+                            "type": "string",
+                            "required": false,
+                            "default": "#000000",
+                            "title": "Text Color",
+                            "inputType": "Text",
+                            "validators": ["required"]
+                        },
+                        "wrongText": {
                             "type": "string",
                             "required": false,
                             "default": "#000000",
@@ -309,7 +341,7 @@
                                 "title": "Word Text",
                                 "inputType": "Text",
                                 "validators": ["required"],
-                                "help": "Word to add into letter mesh."
+                                "help": "Word to add into letter mesh. All CAPS"
                             },
                             "hint": {
                                 "type": "string",
@@ -337,7 +369,7 @@
                                 "title": "Decoy Text",
                                 "inputType": "Text",
                                 "validators": ["required"],
-                                "help": "Decoy word to add into letter mesh."
+                                "help": "Decoy word to add into letter mesh. All CAPS"
                             }
                         }
                     }

@@ -15,7 +15,7 @@ export default function WordGame(props) {
     onWrongSound,
     onFinishSound,
     _isComplete,
-    _customModal,
+    customModal,
     _score,
     _wordgame: {
       words,
@@ -225,6 +225,15 @@ export default function WordGame(props) {
 
   const startGame = () => {
     setGameStarted(true);
+    setTimeout(() => {
+      const gameGrid = document.querySelector('.word-game__body--text');
+      if (gameGrid) {
+        gameGrid.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }, 100);
   };
 
   const restartGame = () => {
@@ -257,28 +266,30 @@ export default function WordGame(props) {
       <div
         className='word-game__customModal'
         style={{
-          visibility: _isComplete && _customModal._isEnabled ? 'visible' : 'hidden'
+          visibility: _isComplete && customModal?._isEnabled ? 'visible' : 'hidden'
         }}
       >
         <div className='word-game__customModal-content'>
           <h2 className='word-game__customModal-title'>
             {_score === maxWordsPerGame
-              ? _customModal.complete?.title
+              ? customModal?.complete?.title
               : _score > 0
-                ? _customModal.incomplete?.title
-                : _customModal.failed?.title
+                ? customModal?.incomplete?.title
+                : customModal?.failed?.title
             }
           </h2>
-          <p className='word-game__customModal-body'>
-            {_score === maxWordsPerGame
-              ? _customModal.complete?.body
-              : _score > 0
-                ? _customModal.incomplete?.body
-                : _customModal.failed?.body
-            }
-          </p>
+          <div
+            className='word-game__customModal-body'
+            dangerouslySetInnerHTML={{ // This is so description can be formatted from Adapt side
+              __html: _score === maxWordsPerGame
+                ? customModal?.complete?.body
+                : _score > 0
+                  ? customModal?.incomplete?.body
+                  : customModal?.failed?.body
+            }}
+          />
           <div className='word-game__customModal-score'>
-            {_customModal?.score} {_score}
+            {customModal?.score} {_score}
           </div>
           <button
             className='word-game__customModal-button'
@@ -289,13 +300,34 @@ export default function WordGame(props) {
               }
             }}
           >
-            {_customModal?.buttonText}
+            {customModal?.buttonText}
           </button>
         </div>
       </div>
+
       <div className="word-game__body--text">
         <p>{description}</p>
       </div>
+
+      <div className="word-game__words">
+        <h3>{wordsToFindText}</h3>
+        <div className="word-game__words-list">
+          {selectedWords.map(({ text, hint }) => (
+            <span
+              key={text}
+              className={classes([
+                'word-game__word',
+                _foundWords?.has(text) ? 'word-game__word--found' : '',
+                currentWord.text === text ? 'word-game__word--current' : '',
+                missedWords?.has(text) ? 'word-game__word--missed' : ''
+              ])}
+            >
+              {hint}
+            </span>
+          ))}
+        </div>
+      </div>
+
       <div className="word-game__grid" style={{ color: theme.text }}>
         {grid.map((row, x) => (
           <div key={x} className="word-game__row">
@@ -312,9 +344,9 @@ export default function WordGame(props) {
                   backgroundColor: selectedLetters.some(l => l.x === x && l.y === y) || guessedLetters.some(l => l.x === x && l.y === y)
                     ? theme.secondary
                     : wrongLetters.has(`${x}-${y}`)
-                      ? '#ff0000' // Red for wrong letters
+                      ? theme.wrong // Red for wrong letters
                       : theme.primary,
-                  color: wrongLetters.has(`${x}-${y}`) ? 'white' : theme.text
+                  color: wrongLetters.has(`${x}-${y}`) ? theme.wrongText : theme.text
                 }}
               >
                 {letter}
@@ -334,25 +366,6 @@ export default function WordGame(props) {
           >
             Reset
           </button>
-        </div>
-      </div>
-
-      <div className="word-game__words">
-        <h3>{wordsToFindText}</h3>
-        <div className="word-game__words-list">
-          {selectedWords.map(({ text, hint }) => (
-            <span
-              key={text}
-              className={classes([
-                'word-game__word',
-                _foundWords?.has(text) ? 'word-game__word--found' : '',
-                currentWord.text === text ? 'word-game__word--current' : '',
-                missedWords?.has(text) ? 'word-game__word--missed' : ''
-              ])}
-            >
-              {hint}
-            </span>
-          ))}
         </div>
       </div>
     </div>
