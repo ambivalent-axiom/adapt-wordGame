@@ -297,15 +297,17 @@
                             "default": "#117f93",
                             "title": "Secondary Color",
                             "inputType": "Text",
-                            "validators": ["required"]
+                            "validators": ["required"],
+                            "help": "Color to highlight selected blocks."
                         },
                         "wrong": {
                             "type": "string",
                             "required": false,
                             "default": "#117f93",
-                            "title": "Secondary Color",
+                            "title": "Wrong! Color",
                             "inputType": "Text",
-                            "validators": ["required"]
+                            "validators": ["required"],
+                            "help": "Color to highlight blocks when wrong word selected."
                         },
                         "text": {
                             "type": "string",
@@ -319,9 +321,10 @@
                             "type": "string",
                             "required": false,
                             "default": "#000000",
-                            "title": "Text Color",
+                            "title": "Wrong! Text Color",
                             "inputType": "Text",
-                            "validators": ["required"]
+                            "validators": ["required"],
+                            "help": "Color to highlight letters in blocks when wrong word selected."
                         },
                         "word": {
                             "type": "string",
@@ -329,7 +332,8 @@
                             "default": "#333333",
                             "title": "Word Color",
                             "inputType": "Text",
-                            "validators": ["required"]
+                            "validators": ["required"],
+                            "help": "Text color for hint strings above."
                         }
                     }
                 },

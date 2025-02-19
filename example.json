@@ -20,57 +20,59 @@
     "onFinishSound": "course/en/sounds/finished.mp3",
     "gridSize": 8,
     "_feedback": {
-        "_isEnabled": false,
-        "complete": {
+      "_isEnabled": false,
+      "complete": {
         "title": "Fantastic! You've found all the fruits!",
         "body": "Great job! You've successfully completed the fruit word search puzzle!"
-        }
+      }
     },
-    "_customModal": {
-        "_isEnabled": true,
-        "complete": {
+    "customModal": {
+      "_isEnabled": true,
+      "complete": {
         "title": "Fantastic! You've found all the fruits!",
-        "body": "Great job! You've successfully completed the fruit word search puzzle!"
-        },
-        "score": "Your score:",
-        "buttonText": "OK"
+        "body": "<p>Great job! You've successfully completed the fruit word search puzzle!</p>"
+      },
+      "score": "Your score:",
+      "buttonText": "OK"
     },
     "_assessment": {
-        "_isEnabled": true,
-        "_shouldSubmitScore": true
+      "_isEnabled": true,
+      "_shouldSubmitScore": true
     },
     "_wordgame": {
         "theme": {
             "primary": "#73c855",
             "secondary": "#b7eaad",
+            "wrong": "#d90ae8",
             "text": "#182a12",
+            "wrongText": "#e8e8e8",
             "word": "#333"
         },
         "words": [
             {
-                "text": "MANGO",
-                "hint": "A fruit that tastes like pine."
+              "text": "MANGO",
+              "hint": "A fruit that tastes like pine."
             },
             {
-                "text": "APPLE",
-                "hint": "Most regular fruit on earth."
+              "text": "APPLE",
+              "hint": "Most regular fruit on earth."
             },
             {
-                "text": "PEAR",
-                "hint": "Almost apple, looks like a bulb."
+              "text": "PEAR",
+              "hint": "Almost apple, looks like a bulb."
             },
             {
-                "text": "KIWI",
-                "hint": "Tastes like a strawberry, but green."
+              "text": "KIWI",
+              "hint": "Tastes like a strawberry, but green."
             }
         ],
         "decoys": [
-            {
+          {
             "text": "CAR"
-            },
-            {
+          },
+          {
             "text": "BULB"
-            }
+          }
         ]
     },
     "globals": {

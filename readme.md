@@ -1,48 +1,33 @@
 # adapt-wordGame
 
-**Word Game** is a component for the Adapt Framework. It presents learners with an interactive word search puzzle where they can find and select hidden words in a grid of letters.
+A word search game component for the Adapt framework. Players search for hidden words in a grid of letters, with customizable themes, hints, and feedback options.
 
-![wordGame](image.png)
+![alt text](image-1.png)
+
+## Features
+
+- Configurable grid size (6x6 to 12x12)
+- Customizable word list with hints
+- Optional decoy words
+- Responsive design suitable for all devices
+- Customizable color themes
+- Sound effects for interactions
+- SCORM assessment integration
+- Custom feedback modal
+- Accessibility support
+- Multiple word placement directions (horizontal, vertical, diagonal)
 
 ## Installation
 
-Download the ZIP and extract into the src > components directory, then run `grunt build`.
+Download the component using the Adapt CLI:
+
+```bash
+adapt install adapt-wordGame
+```
 
 ## Settings Overview
 
-The attributes listed below are used in *components.json* to configure **Word Game**, and are properly formatted as JSON in [*example.json*](example.json).
-
-### Attributes
-
-**\_wordgame** (object): The Word Game component object that contains settings for the component.
-
->**title** (string): The title text that appears above the component.
-
->**displayTitle** (string): The title that appears in the component header.
-
->**body** (string): The instructional text.
-
->**instruction** (string): Specific guidance text for the game.
-
->**\_grid** (object): Settings for the word search grid.
->>**\_rows** (number): Number of rows in the grid.  
->>**\_columns** (number): Number of columns in the grid.
-
->**\_words** (array): Contains objects defining each word to be found.
->>**text** (string): The word to be found.  
->>**description** (string): Optional description or hint for the word.  
->>**\_points** (number): Points awarded for finding this word.
-
->**\_feedback** (object): Various feedback messages.
->>**correct** (string): Message when a word is found.  
->>**incorrect** (string): Message when an invalid selection is made.  
->>**complete** (string): Message when all words are found.
-
->**\_isEnabled** (boolean): Enables/disables this component.
-
->**\_isSubmitted** (boolean): Indicates if the component has been submitted.
-
-### Example Configuration
+**Component JSON Configuration**
 
 ```json
 {
@@ -51,61 +36,105 @@ The attributes listed below are used in *components.json* to configure **Word Ga
     "_type": "component",
     "_component": "wordgame",
     "_classes": "",
-    "_layout": "full",
-    "_wordgame": {
-        "title": "Word Search Game",
-        "displayTitle": "Find the Hidden Words",
-        "body": "Find all the hidden words related to workplace safety.",
-        "instruction": "Click and drag to select letters that form words from the list.",
-        "_grid": {
-            "_rows": 10,
-            "_columns": 10
-        },
-        "_words": [
-            {
-                "text": "SAFETY",
-                "description": "The condition of being protected",
-                "_points": 10
-            },
-            {
-                "text": "HAZARD",
-                "description": "A potential source of danger",
-                "_points": 10
-            }
-        ],
-        "_feedback": {
-            "correct": "Well done! You found a word!",
-            "incorrect": "Keep trying!",
-            "complete": "Congratulations! You've found all the words!"
-        },
+    "_layout": "full-width",
+    "title": "Word Search Game",
+    "displayTitle": "Find the Words!",
+    "titleDescription": "Find the hidden words",
+    "startText": "Start Game",
+    "description": "Find all the hidden words in the grid!",
+    "wordsToFindText": "Words to find:",
+    "_supportedLayout": "full-width",
+    "maxWordsPerGame": 2,
+    "gridSize": 8,
+    "_assessment": {
         "_isEnabled": true,
-        "_isSubmitted": false
+        "_shouldSubmitScore": true
     }
+}
+```
+
+### Core Settings
+
+| Attribute              | Type    | Description                                               |
+|-----------------------|---------|-----------------------------------------------------------|
+| `_component`          | String  | Must be "wordgame"                                        |
+| `_layout`             | String  | "full-width" (recommended) or "half-width"                |
+| `title`               | String  | The title shown in the component                          |
+| `displayTitle`        | String  | Title shown before game starts                            |
+| `titleDescription`    | String  | Description shown before game starts                      |
+| `startText`           | String  | Text for the start button                                 |
+| `maxWordsPerGame`     | Number  | Number of words randomly selected for each game           |
+| `gridSize`            | Number  | Size of the grid (6-12)                                  |
+
+### Theme Settings
+
+```json
+"_wordgame": {
+    "theme": {
+        "primary": "#73c855",
+        "secondary": "#b7eaad",
+        "wrong": "#d90ae8",
+        "text": "#182a12",
+        "wrongText": "#e8e8e8",
+        "word": "#333"
+    }
+}
+```
+
+| Color       | Description                                    |
+|-------------|------------------------------------------------|
+| primary     | Background color for letter cells              |
+| secondary   | Background for selected/found letters          |
+| wrong       | Background for incorrect selections            |
+| text        | Letter color                                   |
+| wrongText   | Letter color for incorrect selections          |
+| word        | Color for hint text                           |
+
+### Word Configuration
+
+```json
+"_wordgame": {
+    "words": [
+        {
+            "text": "APPLE",
+            "hint": "Most regular fruit on earth"
+        }
+    ],
+    "decoys": [
+        {
+            "text": "CAR"
+        }
+    ]
+}
+```
+
+### Audio Settings
+
+```json
+{
+    "onClickSound": "course/en/assets/click.mp3",
+    "onCorrectSound": "course/en/assets/correct.mp3",
+    "onWrongSound": "course/en/assets/wrong.mp3",
+    "onFinishSound": "course/en/assets/finished.mp3"
 }
 ```
 
 ## Limitations
 
-- Currently supports horizontal and vertical word placement only
-- Words must be at least 2 characters long
-- Grid size limited to 15x15 maximum
-
-## Browser Spec
-
-This component has been tested to the standard Adapt browser specification.
+- Grid size must be between 6 and 12 to ensure playability on mobile devices
+- Words must fit within the grid size
+- For optimal performance, limit total words (including decoys) based on grid size
+- All words must be in CAPITAL letters
 
 ## Dependencies
 
 - Adapt Framework >= 5.39.6
 - adapt-contrib-core >= 5.19.1
 
-## Known Issues
+## License
 
-None.
+Licensed under the [MIT License](LICENSE)
 
----
+## Acknowledgements
 
-**Author / Maintainer:** Ambax@Digify arturs@digify.lv  
-**License:** [MIT](LICENSE)  
-**Targeted Framework Version:** >= 5.39.6  
-**Repository:** [https://github.com/ambivalent-axiom/adapt-wordGame](https://github.com/ambivalent-axiom/adapt-wordGame)
+Developed by [Ambax@Digify](mailto:arturs@digify.lv)
