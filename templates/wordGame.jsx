@@ -241,29 +241,22 @@ export default function WordGame(props) {
     setSelectedLetters([]);
     setMissedWords(new Set());
 
-    // Reset at model level
-    reset();
+    reset(); // Reset at model level
 
-    // Wait for state to clear
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 500)); // Wait for state to clear
+    selectWords(); // Select new words
+    await new Promise(resolve => setTimeout(resolve, 100)); // Wait for words to be selected
 
-    // Select new words
-    selectWords();
-
-    // Wait for words to be selected
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    // Generate new grid and start game
-    generateGrid();
+    generateGrid(); // Generate new grid and start game
     setIsResetting(false);
   };
 
   if (!gameStarted) {
-    return (
+    return ( // provide the intro and start button for player
       <templates.gameStart {...{ ...props, startGame }} />
     );
   }
-  return (
+  return ( // main component for game
     <div className="word-game">
       <templates.customModal {...props} />
 
