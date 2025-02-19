@@ -1,8 +1,7 @@
 @grid-background-color: #f0f0f0;
 @words-heading-color: #333;
 @words-background-color: #e0e0e0;
-@words-found-background-color: #90EE90;
-@words-missed-background-color: #ff9b9d;
+
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
@@ -236,21 +235,17 @@
     transition: all 0.3s ease-in-out;
     margin: 2px 0;
     
-    // Found word state
     &--found {
-        max-height: 50px; // Temporary show
-        opacity: 1;
-        background-color: @words-found-background-color;
-        
-        // After showing found state, disappear
+        max-height: 50px;
         animation: fadeOutAndCollapse 0.5s ease-in-out forwards;
-        animation-delay: 0.3s; // Show found state briefly before disappearing
+        animation-delay: 0.3s;
     }
 
     &--missed {
         max-height: 50px;
         opacity: 1;
-        background-color: @words-missed-background-color;
+        animation: fadeOutAndCollapse 0.5s ease-in-out forwards;
+        animation-delay: 0.3s;
     }
 
     &--current {

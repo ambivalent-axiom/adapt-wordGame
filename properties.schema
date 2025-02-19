@@ -228,15 +228,22 @@
             "default": 2,
             "inputType": "Number",
             "validators": ["number"],
-            "help": "How many random words will be selected for each game"
+            "help": "How many random words will be selected for each game. 6 square grid can comfortably accomodate 4 words. + square for each additional word."
         },
         "gridSize": {
             "type": "number",
             "required": false,
             "default": 8,
             "inputType": "Number",
-            "validators": ["number"],
-            "help": "preferably to accomodate word length, but long words can be an issue on mobile devices."
+            "validators": [
+                "number",
+                {
+                    "type": "range",
+                    "min": 6,
+                    "max": 12
+                }
+            ],
+            "help": "Grid size must be between 6 and 12 squares to accommodate word length while ensuring playability on mobile devices."
         },
         "onClickSound": {
             "type": "string",

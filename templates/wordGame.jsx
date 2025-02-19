@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { classes } from 'core/js/reactHelpers';
+import { templates } from 'core/js/reactHelpers';
 
 export default function WordGame(props) {
   const {
-    displayTitle,
-    titleDescription,
-    startText,
-    wordsToFindText,
     description,
     maxWordsPerGame,
     gridSize,
@@ -15,12 +11,9 @@ export default function WordGame(props) {
     onWrongSound,
     onFinishSound,
     _isComplete,
-    customModal,
-    _score,
     _wordgame: {
       words,
-      decoys,
-      theme
+      decoys
     },
     _foundWords,
     onWordFound,
@@ -28,6 +21,7 @@ export default function WordGame(props) {
   } = props;
 
   const [gameStarted, setGameStarted] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const [selectedLetters, setSelectedLetters] = useState([]); // letters user has clicked
   const [selectedWords, setSelectedWords] = useState([]); // Words selected for the current game
   const [guessedLetters, setGuessedLetters] = useState([]); // To track guessed letters and apply CSS
@@ -43,13 +37,16 @@ export default function WordGame(props) {
   const finishSound = new Audio(onFinishSound);
 
   useEffect(() => {
-    if (!gameStarted) {
+    if (!isResetting && !gameStarted) {
       selectWords(); // First we must select words even before game has started
     }
-    if (gameStarted) {
+  }, [isResetting, gameStarted]);
+
+  useEffect(() => {
+    if (!isResetting && gameStarted && selectedWords.length > 0) {
       generateGrid(); // Now lets generate grid
     }
-  }, [gameStarted]);
+  }, [isResetting, gameStarted, selectedWords]);
 
   useEffect(() => {
     if (selectedWords.length > 0) {
@@ -165,6 +162,7 @@ export default function WordGame(props) {
   };
 
   const handleLetterClick = (x, y) => {
+
     playSound(clickSound);
     // Check if letter is already selected - if so, remove it
     const existingIndex = selectedLetters.findIndex(l => l.x === x && l.y === y);
@@ -236,138 +234,59 @@ export default function WordGame(props) {
     }, 100);
   };
 
-  const restartGame = () => {
+  const restartGame = async () => {
+    setIsResetting(true);
+
     setGuessedLetters([]);
     setSelectedLetters([]);
     setMissedWords(new Set());
-    setTimeout(setGameStarted(false), 500);
-    reset(); // perform reset at Adapt model level
-    setTimeout(setGameStarted(true), 500);
-    setTimeout(selectWords(), 500);
-    setTimeout(generateGrid(), 500);
+
+    // Reset at model level
+    reset();
+
+    // Wait for state to clear
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Select new words
+    selectWords();
+
+    // Wait for words to be selected
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Generate new grid and start game
+    generateGrid();
+    setIsResetting(false);
   };
 
   if (!gameStarted) {
     return (
-      <div className="word-game__start">
-        <span className='word-game__start-title'>{displayTitle}</span>
-        <p className="word-game__start-description">{titleDescription}</p>
-        <button
-          className="word-game__start-button"
-          onClick={startGame}
-        >
-          {startText}
-        </button>
-      </div>
+      <templates.gameStart {...{ ...props, startGame }} />
     );
   }
   return (
     <div className="word-game">
-      <div
-        className='word-game__customModal'
-        style={{
-          visibility: _isComplete && customModal?._isEnabled ? 'visible' : 'hidden'
-        }}
-      >
-        <div className='word-game__customModal-content'>
-          <h2 className='word-game__customModal-title'>
-            {_score === maxWordsPerGame
-              ? customModal?.complete?.title
-              : _score > 0
-                ? customModal?.incomplete?.title
-                : customModal?.failed?.title
-            }
-          </h2>
-          <div
-            className='word-game__customModal-body'
-            dangerouslySetInnerHTML={{ // This is so description can be formatted from Adapt side
-              __html: _score === maxWordsPerGame
-                ? customModal?.complete?.body
-                : _score > 0
-                  ? customModal?.incomplete?.body
-                  : customModal?.failed?.body
-            }}
-          />
-          <div className='word-game__customModal-score'>
-            {customModal?.score} {_score}
-          </div>
-          <button
-            className='word-game__customModal-button'
-            onClick={() => {
-              const modalElement = document.querySelector('.word-game__customModal');
-              if (modalElement) {
-                modalElement.style.visibility = 'hidden';
-              }
-            }}
-          >
-            {customModal?.buttonText}
-          </button>
-        </div>
-      </div>
+      <templates.customModal {...props} />
 
       <div className="word-game__body--text">
         <p>{description}</p>
       </div>
 
-      <div className="word-game__words">
-        <h3>{wordsToFindText}</h3>
-        <div className="word-game__words-list">
-          {selectedWords.map(({ text, hint }) => (
-            <span
-              key={text}
-              className={classes([
-                'word-game__word',
-                _foundWords?.has(text) ? 'word-game__word--found' : '',
-                currentWord.text === text ? 'word-game__word--current' : '',
-                missedWords?.has(text) ? 'word-game__word--missed' : ''
-              ])}
-            >
-              {hint}
-            </span>
-          ))}
-        </div>
-      </div>
+      <templates.wordHints {...{
+        ...props,
+        selectedWords,
+        currentWord,
+        missedWords
+      }} />
 
-      <div className="word-game__grid" style={{ color: theme.text }}>
-        {grid.map((row, x) => (
-          <div key={x} className="word-game__row">
-            {row.map((letter, y) => (
-              <button
-                key={`${x}-${y}`}
-                className={classes([
-                  'word-game__letter',
-                  selectedLetters.some(l => l.x === x && l.y === y) ? 'word-game__letter--selected' : '',
-                  wrongLetters.has(`${x}-${y}`) ? 'word-game__letter--wrong' : ''
-                ])}
-                onClick={() => handleLetterClick(x, y)}
-                style={{ // change to light background if selected or if word is guessed
-                  backgroundColor: selectedLetters.some(l => l.x === x && l.y === y) || guessedLetters.some(l => l.x === x && l.y === y)
-                    ? theme.secondary
-                    : wrongLetters.has(`${x}-${y}`)
-                      ? theme.wrong // Red for wrong letters
-                      : theme.primary,
-                  color: wrongLetters.has(`${x}-${y}`) ? theme.wrongText : theme.text
-                }}
-              >
-                {letter}
-              </button>
-            ))}
-          </div>
-        ))}
-        <div
-          className='word-game__reset'>
-          <button
-            className='word-game__reset-button'
-            onClick={() => restartGame()}
-            style={{
-              backgroundColor: theme.secondary,
-              visibility: _isComplete ? 'visible' : 'hidden'
-            }}
-          >
-            Reset
-          </button>
-        </div>
-      </div>
+      <templates.gameGrid {...{
+        ...props,
+        handleLetterClick,
+        restartGame,
+        grid,
+        guessedLetters,
+        selectedLetters,
+        wrongLetters
+      }} />
     </div>
   );
 }
