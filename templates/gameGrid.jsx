@@ -4,7 +4,8 @@ import { classes } from 'core/js/reactHelpers';
 export default function gameGrid(props) {
   const {
     _wordgame: {
-      theme
+      theme,
+      resetButtonText
     },
     wrongLetters,
     selectedLetters,
@@ -52,7 +53,7 @@ export default function gameGrid(props) {
             visibility: _isComplete ? 'visible' : 'hidden'
           }}
         >
-          Reset
+          {resetButtonText}
         </button>
       </div>
     </div>

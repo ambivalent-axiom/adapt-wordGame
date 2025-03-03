@@ -337,6 +337,14 @@
                         }
                     }
                 },
+                "resetButtonText": {
+                    "type": "string",
+                    "required": false,
+                    "title": "Reset Button Text",
+                    "default": "Reset",
+                    "inputType": "Text",
+                    "validators": []
+                },
                 "words": {
                     "type": "array",
                     "required": false,
