@@ -164,17 +164,21 @@ export default function WordGame(props) {
   const handleLetterClick = (x, y) => {
 
     playSound(clickSound);
-    // Check if letter is already selected - if so, remove it
+    let newSelectedLetters;
+
+    const guessedIndex = guessedLetters.findIndex(l => l.x === x && l.y === y);
     const existingIndex = selectedLetters.findIndex(l => l.x === x && l.y === y);
-    if (existingIndex !== -1) {
-      const newSelectedLetters = selectedLetters.filter((_, index) => index !== existingIndex);
-      setSelectedLetters(newSelectedLetters);
+
+    if (existingIndex !== -1) { // Check if letter is already selected - if so, remove it
+      newSelectedLetters = selectedLetters.filter((_, index) => index !== existingIndex);
+    } else if (guessedIndex !== -1) { // Check if letter is already in guessed letters - if so: skip
       return;
+    } else { // else proceed with adding the letter to an array
+      const letter = grid[x][y];
+      newSelectedLetters = [...selectedLetters, { letter, x, y }];
     }
 
-    const letter = grid[x][y];
-    const newSelectedLetters = [...selectedLetters, { letter, x, y }];
-    setSelectedLetters(newSelectedLetters);
+    setSelectedLetters(newSelectedLetters); // update selected letters
 
     // Get the required positions for the current word
     const requiredPositions = currentWord ? allWordPositions[currentWord.text] : new Set();
