@@ -47,6 +47,15 @@
             "inputType": "Text",
             "help": "This is before game starts view."
         },
+        "_isInitiated": {
+            "type": "boolean",
+            "required": false,
+            "title": "Should Component Autoload?",
+            "default": true,
+            "inputType": "Checkbox",
+            "validators": [],
+            "help": "If this is true, component will autostart and be presented ready, in case if false, Start button will be presented to player."
+        },
         "wordsToFindText": {
             "type": "string",
             "required": false,
