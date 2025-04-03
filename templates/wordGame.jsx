@@ -15,6 +15,7 @@ export default function WordGame(props) {
       words,
       decoys
     },
+    _isInitiated,
     _foundWords,
     onWordFound,
     reset
@@ -35,6 +36,12 @@ export default function WordGame(props) {
   const successSound = new Audio(onCorrectSound);
   const errorSound = new Audio(onWrongSound);
   const finishSound = new Audio(onFinishSound);
+
+  useEffect(() => { // to autoinit game without button
+    if (_isInitiated && !gameStarted) {
+      startGame();
+    }
+  }, [_isInitiated, gameStarted]);
 
   useEffect(() => {
     if (!isResetting && !gameStarted) {
@@ -256,9 +263,12 @@ export default function WordGame(props) {
   };
 
   if (!gameStarted) {
-    return ( // provide the intro and start button for player
-      <templates.gameStart {...{ ...props, startGame }} />
-    );
+    if(!_isInitiated) {
+      return ( // provide the intro and start button for player
+        <templates.gameStart {...{ ...props, startGame }} />
+      );
+    }
+    return <div>Notiek ielāde...</div>;
   }
   return ( // main component for game
     <div className="word-game">
