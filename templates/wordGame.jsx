@@ -236,7 +236,7 @@ export default function WordGame(props) {
     setGameStarted(true);
     setTimeout(() => {
       const gameGrid = document.querySelector('.word-game__body--text');
-      if (gameGrid) {
+      if (gameGrid && !_isInitiated) {
         gameGrid.scrollIntoView({
           behavior: 'smooth',
           block: 'start'
