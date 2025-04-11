@@ -5,7 +5,8 @@ export default function gameGrid(props) {
   const {
     _wordgame: {
       theme,
-      resetButtonText
+      resetButtonText,
+      skipButtonText,
     },
     wrongLetters,
     selectedLetters,
@@ -13,7 +14,8 @@ export default function gameGrid(props) {
     _isComplete,
     grid,
     handleLetterClick,
-    restartGame
+    restartGame,
+    skipWord
   } = props;
 
   return (
@@ -50,10 +52,20 @@ export default function gameGrid(props) {
           onClick={() => restartGame()}
           style={{
             backgroundColor: theme.secondary,
-            visibility: _isComplete ? 'visible' : 'hidden'
+            display: _isComplete ? 'block' : 'none'
           }}
         >
           {resetButtonText}
+        </button>
+        <button
+          className='word-game__skip-button'
+          onClick={() => skipWord()}
+          style={{
+            backgroundColor: theme.secondary,
+            display: _isComplete ? 'none' : 'block'
+          }}
+        >
+          {skipButtonText}
         </button>
       </div>
     </div>

@@ -262,6 +262,14 @@ export default function WordGame(props) {
     setIsResetting(false);
   };
 
+  const skipWord = () => {
+    // mark current word as completed with 0 score
+    onWordFound(currentWord?.text, false);
+    // switch word procedure
+    setSelectedLetters([]);
+    selectCurrentWord();
+  };
+
   if (!gameStarted) {
     if(!_isInitiated) {
       return ( // provide the intro and start button for player
@@ -289,6 +297,7 @@ export default function WordGame(props) {
         ...props,
         handleLetterClick,
         restartGame,
+        skipWord,
         grid,
         guessedLetters,
         selectedLetters,

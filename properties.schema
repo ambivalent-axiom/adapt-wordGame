@@ -354,6 +354,14 @@
                     "inputType": "Text",
                     "validators": []
                 },
+                "skipButtonText": {
+                    "type": "string",
+                    "required": false,
+                    "title": "Skip Word Button Text",
+                    "default": "Skip Word",
+                    "inputType": "Text",
+                    "validators": []
+                },
                 "words": {
                     "type": "array",
                     "required": false,
